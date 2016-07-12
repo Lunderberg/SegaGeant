@@ -1,0 +1,171 @@
+#include "RunAction.hh"
+#include "G4Run.hh"
+#include "G4RunManager.hh"
+#include "G4UnitsTable.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "DataOutput.hh"
+#include "Doppler.hh"
+
+#include <iostream>
+#include <sstream>
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+RunAction::RunAction(DataOutput* dat, Doppler* dop)
+{
+  data = dat;
+  doppler = dop;
+  zRes = 0;
+  rRes = 0;
+  gaussianRand = new CLHEP::RandGauss((new CLHEP::RanecuEngine));
+}
+
+RunAction::~RunAction()
+{
+  delete gaussianRand;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void RunAction::BeginOfRunAction(const G4Run* aRun)
+{ 
+  G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
+
+  //inform the runManager to save random number seed
+  G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+  for(i=0;i<CHANNELS;i++)
+  {
+    totalSpectrum[i] = 0;
+    for(j=0;j<16;j++)
+    {
+      segmentSpectrum[j][i] = 0;
+      totalEbySeg[j][i] = 0;
+    }
+  }
+  for(i=0;i<16;i++)
+  {
+    totalCountsSeg[i] = 0;
+  }
+  totalCounts = 0;
+
+  E_per_channel = 1.0*keV;
+  mm_per_channel = 4.0*mm;
+  rad_per_channel = 36*deg;
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void RunAction::fillPerEvent(G4double ECrys,G4double LCrys, G4int hits[], G4double energy[], G4double X[], G4double Y[], G4double Z[])
+{
+  i=0;
+  maxSeg=0;
+  maxSegE=0.0;
+
+   // Increment the individual segment spectra.
+   // Detector id is Ring,detector,zsegment,phisegment,rsegment.
+   // Take segment numbers to be 0-7 for ring 1
+   // and 8-15 for ring 2.
+  while(hits[i]!=0)
+  {
+    segment = (hits[i]%10000)/1000;
+     if((hits[i]/100000)==2)
+     {
+       segment+=8;
+     }
+
+    if(maxSegE<energy[i])
+    {
+      maxSegE=energy[i];
+      maxSeg=segment;
+      tagDetector=i;
+    }
+    segmentCounts[segment]++;
+
+    j=0;
+    while(energy[i]/keV > j*(E_per_channel/keV))
+      {j++;}
+    segmentSpectrum[segment][j]++;
+    i++;
+  }
+
+  //increment the doppler-reconstructed summed spectrum
+  totalCounts++;
+  totalCountsSeg[maxSeg]++;
+  doppler->SetDetNo(hits[tagDetector]);
+  x = X[tagDetector];
+  y = Y[tagDetector];
+  z = Z[tagDetector];
+
+  if(zRes<=0) // Standard segment spatial resolution
+  {
+   E_Doppler = doppler->Correct(ECrys);
+   //E_Doppler = ECrys;
+  }
+  else  // Custom spatial resolution
+  {
+    zRand = gaussianRand->fire(z,zRes);
+    rRand = gaussianRand->fire(sqrt(x*x+y*y),rRes);
+//    E_Doppler = doppler->Correct(ECrys,zRand,rRand);
+//    E_Doppler = doppler->Correct(ECrys,zRand);
+  }
+
+//  i=0;
+//  while(E_Doppler > i*E_per_channel)
+//    {i++;}
+  i=int(E_Doppler/E_per_channel);
+  totalSpectrum[i]++;
+  totalEbySeg[maxSeg][i]++;
+
+
+  // Increment E vs R and E vs Phi matrices
+ /* i=0;
+  while(ECrys > i*E_per_channel)
+    {i++;}
+  j=0;
+  while(sqrt(x*x+y*y)<j*mm_per_channel)
+  {j++;}
+  G4cout << "x,y: " << x << "," << y << " R: " << sqrt(x*x+y*y)/cm << "\tPhi: " << atan(y/x)/deg << G4endl;
+  E_vs_R[i][j]++;
+  j=0;
+  G4double phi = atan(x/y);
+  if (phi<0)
+  {phi+=360*deg;}
+  while(atan(y/x)>j*rad_per_channel)
+  {j++;}
+  E_vs_Phi[i][j]++;
+*/
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void RunAction::EndOfRunAction(const G4Run* aRun)
+{
+ // if(data->GetTotalEVerbose()) // write one spectrum for all segments
+ // {
+    data->WriteSpectrum(totalSpectrum, CHANNELS, totalCounts, E_per_channel/keV, "sp");
+//  }
+//  data->Write2DSpectrum(E_vs_R, CHANNELS, 10, "evsr");
+//  data->Write2DSpectrum(E_vs_Phi, CHANNELS, 10, "evsp");
+
+//  if(data->GetSegVerbose())
+//  {
+    for(i=0;i<16;i++)
+    {
+      std::stringstream num;
+      num << i;
+  //    name = "seg" + num.str();
+      // write uncorrected spectra for each segment
+  //    data->WriteSpectrum(segmentSpectrum[i], CHANNELS, segmentCounts[i], E_per_channel/keV, name);
+      name = "tot_seg" + num.str();
+      // write total energy spectra gated on segment
+      data->WriteSpectrum(totalEbySeg[i], CHANNELS, totalCountsSeg[i], E_per_channel/keV, name);
+    }
+//  }
+
+  G4int NbOfEvents = aRun->GetNumberOfEvent();
+  if (NbOfEvents == 0) return;
+}
+
+
+
