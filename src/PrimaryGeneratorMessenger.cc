@@ -12,11 +12,13 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(
   BetaCmd = new G4UIcmdWithADouble("/source/beta",this);
   EnerCmd = new G4UIcmdWithADoubleAndUnit("/source/energy",this);
   BeamCmd  = new G4UIcmdWithABool("/source/beam",this);
+  EmLocCmd = new G4UIcmdWith3VectorAndUnit("/source/emLoc",this);
 
   gunDir->SetGuidance("source control");
   BetaCmd->SetGuidance("Set source speed v/c");
   EnerCmd->SetGuidance("Set source energy");
   BeamCmd->SetGuidance("Choose Beam mode (1) or source mode (0)");
+  EmLocCmd->SetGuidance("Set point of emission");
 
 
 }
@@ -27,6 +29,7 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
   delete BetaCmd;
   delete EnerCmd;
   delete BeamCmd;
+  delete EmLocCmd;
 }
 
 
@@ -44,6 +47,10 @@ void PrimaryGeneratorMessenger::SetNewValue(
  if(command == BeamCmd){
    Action->SetBeam(BeamCmd->GetNewBoolValue(newValue));
    data->SetBeam(BeamCmd->GetNewBoolValue(newValue));
+   }
+ if (command == EmLocCmd){
+   Action->SetEmLoc(EmLocCmd->GetNew3VectorValue(newValue));
+   G4cout << "Setting Emission Location: " << newValue << G4endl;
    }
 }
 

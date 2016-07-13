@@ -18,6 +18,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DataOutput* dat, Doppler* dop)
   Beam = 0;
   Beta = 0;
   E_cm = 1.0*MeV;
+  EmLoc = G4ThreeVector(0.0,0.0,0.0);
 
   srcParticleGun = new RadioactiveDecayGun(data);
 
@@ -62,7 +63,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
     //beamParticleGun->SetParticlePosition(G4ThreeVector(0.0,0.0,0.0));
-    beamParticleGun->SetParticlePosition(SourcePoint);
+    //beamParticleGun->SetParticlePosition(SourcePoint);
     beamParticleGun->SetParticleMomentumDirection(p_gamma);
     beamParticleGun->SetParticleEnergy(E_lab);
     beamParticleGun->GeneratePrimaryVertex(anEvent);
@@ -94,3 +95,8 @@ void PrimaryGeneratorAction::SetBeam(G4bool b)
  if(!Beam){G4cout << "Calibration Source Mode" << G4endl;}
 }
 
+void PrimaryGeneratorAction::SetEmLoc(G4ThreeVector Loc)
+{
+ EmLoc = Loc;
+ beamParticleGun->SetParticlePosition(EmLoc);
+}

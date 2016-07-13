@@ -22,6 +22,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
      void SetBeta(G4double);
      void SetE(G4double E);
      void SetBeam(G4bool b);
+     void SetEmLoc(G4ThreeVector Loc);
 
    private:
      RadioactiveDecayGun* srcParticleGun;
@@ -31,7 +32,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
      Doppler* doppler;
      G4bool Beam;
      G4double Beta, Gamma, u_cm, u_lab, E_cm, E_lab, theta_lab;
-     G4ThreeVector p_gamma;
+     G4ThreeVector p_gamma, EmLoc;
 };
 
 #endif

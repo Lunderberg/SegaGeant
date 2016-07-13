@@ -8,6 +8,7 @@
 #include "G4UIcmdWithABool.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
+#include "G4UIcmdWith3VectorAndUnit.hh"
 
 class G4ParticleGun;
 class PrimaryGeneratorAction;
@@ -15,6 +16,7 @@ class G4UIdirectory;
 class G4UIcmdWithABool;
 class G4UIcmdWithADouble;
 class G4UIcmdWithADoubleAndUnit;
+class G4UIcmdWith3VectorAndUnit;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class PrimaryGeneratorMessenger: public G4UImessenger
@@ -33,6 +35,7 @@ private:
   G4UIcmdWithADouble*            BetaCmd;
   G4UIcmdWithADoubleAndUnit*     EnerCmd;
   G4UIcmdWithABool*              BeamCmd;
+  G4UIcmdWith3VectorAndUnit*	 EmLocCmd;
 };
 
 #endif
