@@ -98,5 +98,13 @@ void PrimaryGeneratorAction::SetBeam(G4bool b)
 void PrimaryGeneratorAction::SetEmLoc(G4ThreeVector Loc)
 {
  EmLoc = Loc;
- beamParticleGun->SetParticlePosition(EmLoc);
+ if (Beam) 
+ {
+  beamParticleGun->SetParticlePosition(EmLoc);
+ }
+ 
+ else if (!Beam)
+ {
+  srcParticleGun->SetParticlePosition(EmLoc);
+ }
 }

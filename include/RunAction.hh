@@ -31,6 +31,7 @@ public:
   void SetZres(G4double r) {zRes = r;};
 
 private:
+  FILE* binOutput;
   DataOutput* data;
   G4double sumECrys, sum2ECrys;
   G4double sumLCrys, sum2LCrys;
