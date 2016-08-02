@@ -39,7 +39,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   if(!Beam)
   {
-    srcParticleGun->GeneratePrimaryVertex(anEvent);
+    //    srcParticleGun->GeneratePrimaryVertex(anEvent);
+
+    beamParticleGun->SetParticleEnergy(E_cm);
+    beamParticleGun->SetParticleMomentumDirection(G4RandomDirection());
+    beamParticleGun->GeneratePrimaryVertex(anEvent);
   }
   else {
     G4ThreeVector SourcePoint = G4RandomDirection();

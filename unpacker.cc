@@ -1,6 +1,10 @@
 #include <iostream>
 #include <cstdio>
 
+#include "TFile.h"
+#include "TH1.h"
+#include "TRandom.h"
+
 #include "DataOutputFormat.hh"
 
 void print_data(Data& data) {
@@ -18,6 +22,8 @@ void print_data(Data& data) {
 
 int main() {
   FILE* input_file = fopen("binOutput.bin","rb");
+  TH1* hist = new TH1F("gamma_energy","gamma_energy",
+  		       4000, 0, 4000);
 
   while(true) {
     Data data;
@@ -29,8 +35,18 @@ int main() {
     
     fread(&data.dataEntry, sizeof(DataEntry), data.num_entries, input_file);
 
-    print_data(data);
+    for(int i=0; i<data.num_entries; i++) {
+      //      std::cout << data.dataEntry[i].E << std::endl;
+      double energy_keV = data.dataEntry[i].E;
+      hist->Fill(gRandom->Gaus(energy_keV, (0.04/2.355)*energy_keV));
+    }
+
+        print_data(data);
   }
 
   fclose(input_file);
+
+  TFile* output_file = new TFile("hist_output.root","RECREATE");
+  hist->Write();
+  output_file->Close();
 }

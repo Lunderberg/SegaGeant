@@ -44,7 +44,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
        stdDev = resolution*edep/2.35;
        randEnergy = eventaction->runAct->gaussianRand->fire(mean,stdDev);
        eventaction->AddCrys(randEnergy,stepl,copy,X,Y,Z);
-       printf("%f\t%f\t%f\t%f\n",edep,X,Y,Z);
      }
    } 
 }
