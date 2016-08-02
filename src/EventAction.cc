@@ -21,7 +21,8 @@ EventAction::~EventAction()
 
 
 void EventAction::BeginOfEventAction(const G4Event* evt)
-{  
+{ 
+  crystalInfo.clear(); 
   G4int evtNb = evt->GetEventID();
   // do this just not to get warnings at compile
   evtNb = 1;
@@ -49,14 +50,38 @@ void EventAction::EndOfEventAction(const G4Event* evt)
   
   if(EnergyCrys!=0)
   { 
-    runAct->fillPerEvent(EnergyCrys,TrackLCrys,hits,energy,X,Y,Z);
+    //runAct->fillPerEvent(EnergyCrys,TrackLCrys,hits,energy,X,Y,Z);
+    runAct->fillPerEvent(crystalInfo);
  } 
 }  
 
 void EventAction::AddCrys(G4double de,G4double dl,G4int detNo,
 			       G4double x,G4double y,G4double z) 
 {
-  G4int i=0;
+  detNo = detNo/100000;
+
+  if (!crystalInfo.count (detNo)) {
+    crystalInfo[detNo].energy = 0;
+
+    crystalInfo[detNo].maxEnergy = 0;
+
+    crystalInfo[detNo].x = 0;
+
+    crystalInfo[detNo].y = 0;
+
+    crystalInfo[detNo].z = 0;
+  }
+
+  if (crystalInfo[detNo].maxEnergy <= de) {
+
+   crystalInfo[detNo].x = x;
+   crystalInfo[detNo].y = y;
+   crystalInfo[detNo].z = z;
+   crystalInfo[detNo].maxEnergy = de;
+  }
+ crystalInfo[detNo].energy += de; 
+
+ G4int i=0;
   EnergyCrys += de;
   TrackLCrys += dl;
   if(hits[n_scat-1] != 0)

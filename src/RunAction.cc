@@ -6,6 +6,7 @@
 #include "PrimaryGeneratorAction.hh"
 #include "DataOutput.hh"
 #include "Doppler.hh"
+#include "EventAction.hh"
 
 #include <iostream>
 #include <sstream>
@@ -59,6 +60,25 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void RunAction::fillPerEvent(std::map<int,CrystalEntry>& crystalInfo) {
+  	
+        Data output;
+
+	int k  = 0;
+	for(auto& entry : crystalInfo) {
+		output.dataEntry[k] = {entry.second.energy/keV, 
+		                       entry.second.x/mm, 
+		                       entry.second.y/mm, 
+		                       entry.second.z/mm};
+		k++;
+	}
+	output.num_entries = crystalInfo.size();
+
+	fwrite(&output, output.bytes(), 1, binOutput);
+
+
+ }
 
 void RunAction::fillPerEvent(G4double ECrys,G4double LCrys, G4int hits[], G4double energy[], G4double X[], G4double Y[], G4double Z[])
 {

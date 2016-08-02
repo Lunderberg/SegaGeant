@@ -15,6 +15,8 @@
 class G4Run;
 class PrimaryGeneratorAction;
 class DataOutput;
+struct CrystalEntry;
+
 class RunAction : public G4UserRunAction
 {
 public:
@@ -23,7 +25,8 @@ public:
 
   void BeginOfRunAction(const G4Run*);
   void EndOfRunAction(const G4Run*);
-    
+
+  void fillPerEvent(std::map<int,CrystalEntry>& crystalInfo);    
   void fillPerEvent(G4double, G4double, G4int*, G4double*, G4double*, G4double*, G4double*); 
   Doppler* doppler;
   CLHEP::RandGauss* gaussianRand;

@@ -2,11 +2,18 @@
 #ifndef EventAction_h
 #define EventAction_h 1
 
+#include <map>
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 #include "Randomize.hh"
 #include "EventMessenger.hh"
 #define N_SCAT 100
+
+struct CrystalEntry {
+   double energy;
+   double maxEnergy;
+   double x, y, z; 
+  };
 
 class RunAction;
 class EventMessenger;
@@ -45,6 +52,7 @@ private:
   G4double            stdDev;
   G4double            resolution;
   G4double            randEnergy;
+  std::map<int,CrystalEntry> crystalInfo;
 
 };
 
