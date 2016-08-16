@@ -1,6 +1,8 @@
 #ifndef DetectorConstruction_H
 #define DetectorConstruction_H 1
 
+#include <vector>
+
 #include "G4VUserDetectorConstruction.hh"
 #include "SeGA_Detector.hh"
 #include "Doppler.hh"
@@ -17,7 +19,8 @@
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 #include "SeGA_Detector.hh"
-#include <vector>
+#include "Target.hh"
+#include "Materials.hh"
 
 class G4LogicalVolume;
 class G4VPhysicalVolume;
@@ -25,7 +28,7 @@ class G4VPhysicalVolume;
 class DetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-   
+
    DetectorConstruction(Doppler*);
    ~DetectorConstruction();
    G4VPhysicalVolume* Construct();
@@ -33,6 +36,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
   private:
 
    Doppler* doppler;
+   Target* target;
+   Materials* materials;
 
    G4LogicalVolume* experimentalHall_log;
    G4LogicalVolume* BeamTube_log;
@@ -40,7 +45,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction
    G4LogicalVolume* CD_log;
    G4LogicalVolume* frame_log;
    G4LogicalVolume* GV_log;
-  
+
    G4VPhysicalVolume* experimentalHall_phys;
    G4VPhysicalVolume* BeamTube_phys;
    G4VPhysicalVolume* Target_phys;
@@ -80,4 +85,3 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 };
 
 #endif
-

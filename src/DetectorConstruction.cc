@@ -3,6 +3,8 @@
 DetectorConstruction::DetectorConstruction(Doppler* dop)
  :  experimentalHall_log(0), experimentalHall_phys(0)
 {
+  materials = new Materials;
+
  doppler = dop;
  Ar = new G4Material("ArgonGas",18,39.85*g/mole,1.782*mg/cm3);
  Al = new G4Material("Aluminum",13,26.98*g/mole,2.7*g/cm3);
@@ -15,10 +17,13 @@ DetectorConstruction::DetectorConstruction(Doppler* dop)
  ssteel->AddElement(C,0.04);
  ssteel->AddElement(Fe,0.88);
  ssteel->AddElement(Co,0.08);
+
+ target = new Target(experimentalHall_log);
 }
 
-DetectorConstruction::~DetectorConstruction()
-{}
+DetectorConstruction::~DetectorConstruction() {
+  delete target;
+}
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
@@ -28,7 +33,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  G4double expHall_x = 5.0*m;
  G4double expHall_y = 5.0*m;
  G4double expHall_z = 5.0*m;
- 
+
  G4Box* experimentalHall_box = new G4Box("expHall_box",expHall_x,expHall_y,expHall_z);
  experimentalHall_log = new G4LogicalVolume(experimentalHall_box, Ar, "expHal_log",0,0,0);
  experimentalHall_phys = new G4PVPlacement(0,G4ThreeVector(),experimentalHall_log,"expHall",0,false,0);
@@ -58,20 +63,21 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
  // Construct Target
  //
- TargetX=50*mm;
- TargetY=50*mm;
- TargetZ=0.1*mm;
- TargetMaterial = Au;
+ target->Construct();
+ // TargetX=50*mm;
+ // TargetY=50*mm;
+ // TargetZ=0.1*mm;
+ // TargetMaterial = Au;
 
- G4Box* Target_solid = new G4Box("Target", TargetX/2.,TargetY/2.,TargetZ/2.);
- Target_log = new G4LogicalVolume(Target_solid,TargetMaterial,"Target");
- Target_phys = new G4PVPlacement(0,          //Rotation
-                                TargetPos,   //Position
-  			        Target_log,  //logical volume
- 			        "Target",    //name
-			        experimentalHall_log, //mother logical volume
-			        false,       //boolean operations
-			        0);          //copy number
+ // G4Box* Target_solid = new G4Box("Target", TargetX/2.,TargetY/2.,TargetZ/2.);
+ // Target_log = new G4LogicalVolume(Target_solid,TargetMaterial,"Target");
+ // Target_phys = new G4PVPlacement(0,          //Rotation
+ //                                TargetPos,   //Position
+ //  			        Target_log,  //logical volume
+ // 			        "Target",    //name
+ //        		        experimentalHall_log, //mother logical volume
+ //        		        false,       //boolean operations
+ //        		        0);          //copy number
 
 
  // Construct Silicon Telescope
@@ -112,7 +118,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  for(itPos = ring1.begin();itPos<ring1.end();itPos++)
   {delete *itPos;}
  ring1.clear();
- 
+
  for(itPos = ring2.begin();itPos<ring2.end();itPos++)
   {delete *itPos;}
  ring2.clear();
@@ -172,12 +178,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  BTvis->SetVisibility(true);
  BTvis->SetForceSolid(false);
  BeamTube_log->SetVisAttributes(BTvis);
- 
- G4Colour red (1.0,0.0,0.0);
- G4VisAttributes* TarVis = new G4VisAttributes(red);
- TarVis->SetVisibility(true);
- TarVis->SetForceSolid(false);
- Target_log->SetVisAttributes(TarVis);
 
  G4Colour green (0.0,1.0,0.0);
  G4VisAttributes* CDvis = new G4VisAttributes(green);

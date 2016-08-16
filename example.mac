@@ -1,0 +1,7 @@
+/Target/Material Au
+/Target/Thickness 0.1 mm
+
+/source/beam 0
+/source/energy 500 keV
+
+/run/beamOn 100000
