@@ -16,6 +16,7 @@ class G4Run;
 class PrimaryGeneratorAction;
 class DataOutput;
 struct CrystalEntry;
+class RunMessenger;
 
 class RunAction : public G4UserRunAction
 {
@@ -32,8 +33,11 @@ public:
   CLHEP::RandGauss* gaussianRand;
   void SetRres(G4double r) {rRes = r;};
   void SetZres(G4double r) {zRes = r;};
+  void SetBinDir(G4String d);
+  void SetBinFile(G4String f);
 
 private:
+  RunMessenger* runMessenger;
   FILE* binOutput;
   DataOutput* data;
   G4double sumECrys, sum2ECrys;
@@ -51,7 +55,7 @@ private:
   G4int totalCountsSeg[16];
   G4int segment, maxSeg, tagDetector;
   G4int i,j;
-  G4String name;
+  G4String name, binFile, binDir, path;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

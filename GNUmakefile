@@ -12,7 +12,7 @@ ifndef G4INSTALL
  G4INSTALL = /projects/geant/geant4.6.1
 endif
 
-CPPFLAGS += -std=c++11
+CPPFLAGS += -std=c++11 -g
 
 .PHONY: all
 all: lib bin
