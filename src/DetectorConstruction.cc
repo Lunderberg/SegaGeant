@@ -60,7 +60,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  //
  TargetX=50*mm;
  TargetY=50*mm;
- TargetZ=0.1*mm;
+ TargetZ=0.8*um;
  TargetMaterial = Au;
 
  G4Box* Target_solid = new G4Box("Target", TargetX/2.,TargetY/2.,TargetZ/2.);
@@ -76,6 +76,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
  // Construct Silicon Telescope
  //
+ /*
  CDrmin=2*cm;
  CDrmax=6*cm;
  CDthickness=1*mm;
@@ -89,7 +90,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  CD_log = new G4LogicalVolume(CD_solid,CDMaterial,"CD_log",0,0,0);
  CD1_phys = new G4PVPlacement(0,G4ThreeVector(0,0,CDz1),CD_log,"CD1",experimentalHall_log,false,0);
  CD2_phys = new G4PVPlacement(0,G4ThreeVector(0,0,CDz2),CD_log,"CD2",experimentalHall_log,false,0);
-
+ */
 
  // Construct SeGA Array
  // Barrel SeGA
@@ -102,7 +103,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  Spaces1 = 8;
  Spaces2 = 8;
  nDet1 = 8;
- nDet2 = 8;
+ nDet2 = 6; //should be 8, lowered temporarily
  flip1 = 1;
  flip2 = -1;
  RingID1 = 1;
@@ -147,8 +148,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
  JANUS = new JANUS_Detector;
  JANUS->Construct();
- JANUS_Phys1 = new G4PVPlacement(0, JANUS_Offset1, JANUS->GetLogical(), "JANUS_Phys1", BeamTube_log,0,0);
- JANUS_Phys2 = new G4PVPlacement(0, JANUS_Offset2, JANUS->GetLogical(), "JANUS_Phys2", BeamTube_log,0,0);   
+ JANUS_Phys1 = new G4PVPlacement(0, JANUS_Offset1, JANUS->GetLogical(), "JANUS_Phys", experimentalHall_log,0,0);
+ JANUS_Phys2 = new G4PVPlacement(0, JANUS_Offset2, JANUS->GetLogical(), "JANUS_Phys", experimentalHall_log,0,0);   
 
  // Construct Frame & Gate Valve
  //
@@ -188,11 +189,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
  TarVis->SetForceSolid(false);
  Target_log->SetVisAttributes(TarVis);
 
- G4Colour green (0.0,1.0,0.0);
+ /*G4Colour green (0.0,1.0,0.0);
  G4VisAttributes* CDvis = new G4VisAttributes(green);
  CDvis->SetVisibility(true);
  CDvis->SetForceSolid(false);
  CD_log->SetVisAttributes(CDvis);
+ */
 
  G4Colour grey (0.8,0.8,0.8,0.3);
  G4VisAttributes* frameVis = new G4VisAttributes(grey);

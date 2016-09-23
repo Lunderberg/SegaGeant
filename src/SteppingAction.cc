@@ -1,4 +1,5 @@
 #include "SteppingAction.hh"
+#include "DataOutputFormat.hh"
 
 #include "G4ios.hh"
 #include "DetectorConstruction.hh"
@@ -21,7 +22,7 @@ SteppingAction::~SteppingAction()
 void SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
    G4VPhysicalVolume* volume
-   = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+   = aStep->GetPreStepPoint()->GetPhysicalVolume();//GetTouchableHandle()->GetVolume();
    G4int copy;
    G4double edep = aStep->GetTotalEnergyDeposit();
    G4double stepl = 0;
@@ -30,20 +31,31 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)
    {
      stepl = aStep->GetStepLength();
    }
-   if(volume->GetName() == "detectorcell")
+   if(volume->GetName() == "detectorcell" || volume->GetName() == "JANUS_Phys")
    {
      copy = volume->GetCopyNo();
      G4double X,Y,Z;
      X = aStep->GetTrack()->GetPosition().x();
      Y = aStep->GetTrack()->GetPosition().y();
      Z = aStep->GetTrack()->GetPosition().z();
+     mean = edep;
+     Type det;
 
-     if(edep != 0.0)
-     {
-       mean = edep;
-       stdDev = resolution*edep/2.35;
-       randEnergy = eventaction->runAct->gaussianRand->fire(mean,stdDev);
-       eventaction->AddCrys(randEnergy,stepl,copy,X,Y,Z);
+     if (edep != 0.0) {
+
+      if(volume->GetName() == "detectorcell") {
+       resolution = 0.003;
+       det = SeGA; 
+      }
+
+      if (volume->GetName() == "JANUS_Phys") {
+       resolution = 0.003;
+       det = JANUS;
+      }
+
+     stdDev = resolution*edep/2.35;
+     randEnergy = eventaction->runAct->gaussianRand->fire(mean,stdDev);
+     eventaction->AddCrys(randEnergy,stepl,copy,X,Y,Z,det);
      }
    } 
 }

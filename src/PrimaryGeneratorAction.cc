@@ -20,12 +20,12 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(DataOutput* dat, Doppler* dop)
   E_cm = 1.0*MeV;
   EmLoc = G4ThreeVector(0.0,0.0,0.0);
 
-  srcParticleGun = new RadioactiveDecayGun(data);
+  beamParticleGun = new RadioactiveDecayGun(data);
 
   G4int n_particle = 1;
-  beamParticleGun = new G4ParticleGun(n_particle);
+  srcParticleGun = new G4ParticleGun(n_particle);
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  beamParticleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
+  srcParticleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
 }
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
@@ -41,36 +41,42 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   {
     //    srcParticleGun->GeneratePrimaryVertex(anEvent);
 
-    beamParticleGun->SetParticleEnergy(E_cm);
+    srcParticleGun->SetParticleEnergy(E_cm);
+    srcParticleGun->SetParticleMomentumDirection(G4RandomDirection());
+    srcParticleGun->SetParticlePosition(EmLoc);
+    srcParticleGun->GeneratePrimaryVertex(anEvent);
+  } else {
+    beamParticleGun->SetNucleus(Nucleus(78, 36, 750*keV));
+    beamParticleGun->SetParticleEnergy(0.0*MeV);
     beamParticleGun->SetParticleMomentumDirection(G4RandomDirection());
+    beamParticleGun->SetParticlePosition(EmLoc);
     beamParticleGun->GeneratePrimaryVertex(anEvent);
-  }
-  else {
-    G4ThreeVector SourcePoint = G4RandomDirection();
-    SourcePoint.setX(0.0);
-    SourcePoint.setY(0.0);
-    G4float NewBeta = Beta*(1-0.05*SourcePoint.z());
-    SourcePoint.setZ(SourcePoint.z()*1*mm);
+
+    //G4ThreeVector SourcePoint = G4RandomDirection();
+    //SourcePoint.setX(0.0);
+    //SourcePoint.setY(0.0);
+    //G4float NewBeta = Beta*(1-0.05*SourcePoint.z());
+    //SourcePoint.setZ(SourcePoint.z()*1*mm);
 
     //Gamma = 1.0/sqrt(1-Beta*Beta);
-    Gamma = 1.0/sqrt(1-NewBeta*NewBeta);
-    p_gamma = G4RandomDirection();
-    u_cm = p_gamma.cosTheta();
+    //Gamma = 1.0/sqrt(1-NewBeta*NewBeta);
+    //p_gamma = G4RandomDirection();
+    //u_cm = p_gamma.cosTheta();
     //u_lab = (u_cm + Beta)/(1+u_cm*Beta);
-    u_lab = (u_cm + NewBeta)/(1+u_cm*NewBeta);
-    theta_lab = acos(u_lab);
-    p_gamma.setTheta(theta_lab);
+    //u_lab = (u_cm + NewBeta)/(1+u_cm*NewBeta);
+    //theta_lab = acos(u_lab);
+    //p_gamma.setTheta(theta_lab);
     //E_lab = E_cm*Gamma*(1+Beta*u_cm);
-    E_lab = E_cm*Gamma*(1+NewBeta*u_cm);
+    //E_lab = E_cm*Gamma*(1+NewBeta*u_cm);
 
 //    G4cout << "Original u_lab: " << u_lab << G4endl;
 
 
     //beamParticleGun->SetParticlePosition(G4ThreeVector(0.0,0.0,0.0));
     //beamParticleGun->SetParticlePosition(SourcePoint);
-    beamParticleGun->SetParticleMomentumDirection(p_gamma);
-    beamParticleGun->SetParticleEnergy(E_lab);
-    beamParticleGun->GeneratePrimaryVertex(anEvent);
+    //beamParticleGun->SetParticleMomentumDirection(p_gamma);
+    //beamParticleGun->SetParticleEnergy(E_lab);
+    //beamParticleGun->GeneratePrimaryVertex(anEvent);
   }
 }
 
@@ -102,13 +108,4 @@ void PrimaryGeneratorAction::SetBeam(G4bool b)
 void PrimaryGeneratorAction::SetEmLoc(G4ThreeVector Loc)
 {
  EmLoc = Loc;
- if (Beam) 
- {
-  beamParticleGun->SetParticlePosition(EmLoc);
- }
- 
- else if (!Beam)
- {
-  srcParticleGun->SetParticlePosition(EmLoc);
- }
 }
