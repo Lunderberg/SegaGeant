@@ -5,6 +5,7 @@
 
 #include "G4VUserDetectorConstruction.hh"
 #include "SeGA_Detector.hh"
+#include "JANUS_Detector.hh"
 #include "Doppler.hh"
 
 #include "G4Material.hh"
@@ -39,6 +40,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
    Target* target;
    Materials* materials;
 
+   JANUS_Detector* JANUS;
+
    G4LogicalVolume* experimentalHall_log;
    G4LogicalVolume* BeamTube_log;
    G4LogicalVolume* Target_log;
@@ -54,7 +57,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
    G4VPhysicalVolume* frame1_phys;
    G4VPhysicalVolume* frame2_phys;
    G4VPhysicalVolume* GV_phys;
-
+   G4VPhysicalVolume* JANUS_Phys1;
+   G4VPhysicalVolume* JANUS_Phys2;
 
    G4Element* C;
    G4Element* Co;
@@ -78,6 +82,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
    G4ThreeVector BTPos;
    G4ThreeVector TargetPos;
+   G4ThreeVector JANUS_Offset1;
+   G4ThreeVector JANUS_Offset2;
 
    std::vector<SeGA_Detector*> ring1;
    std::vector<SeGA_Detector*> ring2;

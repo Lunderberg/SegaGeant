@@ -84,7 +84,7 @@ int main(int argc,char* argv[])
 //  UI->ApplyCommand("/control/execute vis.mac");
   UI->ApplyCommand("/vis/open OGLSX");
   UI->ApplyCommand("/vis/drawVolume");
-//  UI->ApplyCommand("/vis/viewer/set/viewpointThetaPhi 70 20");
+  //UI->ApplyCommand("/vis/viewer/set/viewpointThetaPhi 70 20");
   G4UIsession* session = new G4UIterminal(new G4UItcsh);
   session->SessionStart();
   delete session;

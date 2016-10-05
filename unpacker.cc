@@ -20,8 +20,16 @@ void print_data(Data& data) {
   std::cout << std::flush;
 }
 
-int main() {
-  FILE* input_file = fopen("binOutput.bin","rb");
+int main(int argc, char** argv) {
+  if(argc < 3) {
+    std::cerr << "Usage: unpacker INPUT_FILE OUTPUT_FILE" << std::endl;
+    return 1;
+  }
+
+  const char* input_filename = argv[1];
+  const char* output_filename = argv[2];
+
+  FILE* input_file = fopen(input_filename,"rb");
   TH1* hist = new TH1F("gamma_energy","gamma_energy",
   		       4000, 0, 4000);
 
@@ -46,7 +54,7 @@ int main() {
 
   fclose(input_file);
 
-  TFile* output_file = new TFile("hist_output.root","RECREATE");
+  TFile* output_file = new TFile(output_filename,"RECREATE");
   hist->Write();
   output_file->Close();
 }

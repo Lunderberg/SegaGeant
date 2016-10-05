@@ -7,6 +7,7 @@
 #include "DataOutput.hh"
 #include "Doppler.hh"
 #include "EventAction.hh"
+#include "RunMessenger.hh"
 
 #include <iostream>
 #include <sstream>
@@ -20,13 +21,13 @@ RunAction::RunAction(DataOutput* dat, Doppler* dop)
 	zRes = 0;
 	rRes = 0;
 	gaussianRand = new CLHEP::RandGauss((new CLHEP::RanecuEngine));
-
-	binOutput = fopen("binOutput.bin","wb");
+        binDir = "";
+        binFile = "binOutput.bin";
+        runMessenger = new RunMessenger(this);
 }
 
 RunAction::~RunAction()
 {
-	fclose(binOutput);
 	delete gaussianRand;
 }
 
@@ -34,7 +35,10 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* aRun)
 { 
-	G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
+        path = binDir + "/" + binFile; 
+	binOutput = fopen(path.c_str(),"wb");
+
+        G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
 	//inform the runManager to save random number seed
 	G4RunManager::GetRunManager()->SetRandomNumberStore(false);
@@ -206,6 +210,18 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 
 	G4int NbOfEvents = aRun->GetNumberOfEvent();
 	if (NbOfEvents == 0) return;
+
+        fclose(binOutput);
+}
+
+void RunAction::SetBinFile(G4String f)
+{
+ binFile = f; 
+}
+
+void RunAction::SetBinDir(G4String d)
+{
+ binDir = d;
 }
 
 

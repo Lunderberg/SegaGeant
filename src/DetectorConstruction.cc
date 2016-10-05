@@ -146,6 +146,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
    i++;
    Phi+=360*deg/Spaces2;
  }
+ 
+ //Construt JANUS Detectors
+ JANUS_Offset1 = {0.0,0.0,3.0*cm};
+ JANUS_Offset2 = {0.0,0.0,-3.0*cm};
+
+ JANUS = new JANUS_Detector;
+ JANUS->Construct();
+ JANUS_Phys1 = new G4PVPlacement(0, JANUS_Offset1, JANUS->GetLogical(), "JANUS_Phys1", BeamTube_log,0,0);
+ JANUS_Phys2 = new G4PVPlacement(0, JANUS_Offset2, JANUS->GetLogical(), "JANUS_Phys2", BeamTube_log,0,0);   
 
  // Construct Frame & Gate Valve
  //
