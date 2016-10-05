@@ -9,9 +9,9 @@ JANUS_Detector::JANUS_Detector()
  outerRadius = 3.5*cm;
  thickness = (140*0.001)*mm;
 
- phiSegs = 32.0;
- rSegs = 24.0;
- detSegVec = {0.0,0.0,0.0}; 
+ //phiSegs = 32.0;
+ //rSegs = 24.0;
+ //detSegVec = {0.0,0.0,0.0}; 
 }
 
 JANUS_Detector::~JANUS_Detector()
@@ -23,7 +23,8 @@ void JANUS_Detector::Construct()
  //Create the shape and material of a JANUS Detector
  detector_Tubs = new G4Tubs("detector_Tubs", innerRadius, outerRadius, thickness/2, 0.0*deg, 360.0*deg);
  detector_Log = new G4LogicalVolume(detector_Tubs, Si, "detector_Log");
- 
+
+/* 
  //Slice the JANUS detector into its segments
  //loop over radial segments
  for (i=0; i < rSegs; i++)
@@ -43,7 +44,8 @@ void JANUS_Detector::Construct()
    detSeg_Phys = new G4PVPlacement(0,detSegVec, detSeg_Log, "detSeg_Phys", detector_Log,0,0); 
   }
  }
- 
+*/ 
+
  //Visualization Attributes
  G4Colour yellow(1.0,1.0,0.0, 1.0);
  G4VisAttributes* vis = new G4VisAttributes(yellow);

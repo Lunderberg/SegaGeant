@@ -24,14 +24,16 @@ private:
 
   G4Material* Si;
 
-  G4double innerRadius, outerRadius, thickness, rSegs, phiSegs; 
-  G4double segInnerRad, segOuterRad, segStartAngle, segStopAngle;
-  G4int i, j, k;
-  G4ThreeVector detSegVec;
+  G4double innerRadius, outerRadius, thickness;
+  //G4double rSegs, phiSegs; 
+  //G4double segInnerRad, segOuterRad, segStartAngle, segStopAngle;
+  //G4int i, j;
+  //G4ThreeVector detSegVec;
 
-  G4Tubs* detSeg_Tubs;
-  G4LogicalVolume* detSeg_Log;
-  G4VPhysicalVolume* detSeg_Phys;
+  //G4Tubs* detSeg_Tubs;
+  //G4LogicalVolume* detSeg_Log;
+  //G4VPhysicalVolume* detSeg_Phys;
+
   G4Tubs* detector_Tubs;
   G4LogicalVolume* detector_Log;
 

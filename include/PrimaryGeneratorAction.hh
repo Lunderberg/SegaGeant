@@ -25,8 +25,8 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
      void SetEmLoc(G4ThreeVector Loc);
 
    private:
-     RadioactiveDecayGun* srcParticleGun;
-     G4ParticleGun* beamParticleGun;
+     RadioactiveDecayGun* beamParticleGun;
+     G4ParticleGun* srcParticleGun;
      PrimaryGeneratorMessenger* gunMessenger;
      DataOutput* data;
      Doppler* doppler;

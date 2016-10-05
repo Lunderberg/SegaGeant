@@ -9,6 +9,7 @@
 #include "EventAction.hh"
 #include "RunMessenger.hh"
 
+#include <stdio.h>
 #include <iostream>
 #include <sstream>
 
@@ -35,8 +36,20 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* aRun)
 { 
-        path = binDir + "/" + binFile; 
+       if (binDir == "")
+        { 
+         path = binFile;
+        }
+
+       else { 
+        path = binDir + "/" + binFile;
+       }
+  
 	binOutput = fopen(path.c_str(),"wb");
+        if (!binOutput) 
+         {
+          printf("Error: Could not open file \"%s\"\n", path.c_str());
+         }
 
         G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
@@ -65,23 +78,53 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RunAction::fillPerEvent(std::map<int,CrystalEntry>& crystalInfo) {
+void RunAction::fillPerEvent(std::map<int,CrystalEntry>& crystalInfo, G4int evtNb) {
   	
-        Data output;
+        JANUSData jOutput;
+        SegaData sOutput;
 
-	int k  = 0;
+        jOutput.num_entries = 0;
+        sOutput.num_entries = 0;
+       
 	for(auto& entry : crystalInfo) {
-		output.dataEntry[k] = {entry.second.energy/keV, 
-		                       entry.second.x/mm, 
-		                       entry.second.y/mm, 
-		                       entry.second.z/mm};
-		k++;
-	}
-	output.num_entries = crystalInfo.size();
+	 if (entry.second.detector == JANUS) {
+                jOutput.dataEntry[jOutput.num_entries] = {entry.second.energy/keV, 
+		                        entry.second.x/mm, 
+		                        entry.second.y/mm, 
+		                        entry.second.z/mm};
+                jOutput.num_entries++;
+	 }
 
-	fwrite(&output, output.bytes(), 1, binOutput);
+         if (entry.second.detector == SeGA) {
+                sOutput.dataEntry[sOutput.num_entries] = {entry.second.energy/keV,
+                                        entry.second.x/mm,
+                                        entry.second.y/mm,
+                                        entry.second.z/mm};
+                sOutput.num_entries++;
+         } 
+
+        }
+
+        if (jOutput.num_entries != 0) {
+         Header jHeader;
+         jHeader.type = JANUS;
+         jHeader.size = jOutput.bytes();
+         jHeader.evtNb = evtNb;
+
+         fwrite(&jHeader, jHeader.bytes(), 1, binOutput);
+         fwrite(&jOutput, jOutput.bytes(), 1, binOutput);
+        }
 
 
+        if (sOutput.num_entries != 0) {
+         Header sHeader;
+         sHeader.type = SeGA;
+         sHeader.size = sOutput.bytes();
+         sHeader.evtNb = evtNb;
+       
+         fwrite(&sHeader, sHeader.bytes(), 1, binOutput);
+         fwrite(&sOutput, sOutput.bytes(), 1, binOutput);
+        }
  }
 
 void RunAction::fillPerEvent(G4double ECrys,G4double LCrys, G4int hits[], G4double energy[], G4double X[], G4double Y[], G4double Z[])
@@ -166,7 +209,8 @@ void RunAction::fillPerEvent(G4double ECrys,G4double LCrys, G4int hits[], G4doub
 
 	//create array of DataEntry structures, fill it
 	//put array of DataEntry structures into a Data structure
-	Data output;
+	
+        /*Data output;
 
 	int k  = 0;
 	while(X[k] != 0)
@@ -178,7 +222,7 @@ void RunAction::fillPerEvent(G4double ECrys,G4double LCrys, G4int hits[], G4doub
 	//k = num_entries
 	output.num_entries = k;
 
-	fwrite(&output, output.bytes(), 1, binOutput);
+	fwrite(&output, output.bytes(), 1, binOutput);*/
 
 }
 
@@ -216,12 +260,14 @@ void RunAction::EndOfRunAction(const G4Run* aRun)
 
 void RunAction::SetBinFile(G4String f)
 {
- binFile = f; 
+ binFile = f;
+ G4cout << "Setting binary output file name to: " << f << G4endl; 
 }
 
 void RunAction::SetBinDir(G4String d)
 {
  binDir = d;
+ G4cout << "Setting binary output directory to: " << d << G4endl;
 }
 
 

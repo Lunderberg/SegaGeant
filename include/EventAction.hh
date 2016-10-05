@@ -7,12 +7,14 @@
 #include "globals.hh"
 #include "Randomize.hh"
 #include "EventMessenger.hh"
+#include "DataOutputFormat.hh"
 #define N_SCAT 100
 
 struct CrystalEntry {
    double energy;
    double maxEnergy;
    double x, y, z; 
+   Type detector;
   };
 
 class RunAction;
@@ -29,7 +31,7 @@ public:
   void  EndOfEventAction(const G4Event*);
     
   void AddCrys(G4double de,G4double dl,G4int detNo,
-	       G4double x,G4double y,G4double z);
+	       G4double x,G4double y,G4double z, Type det);
                      
   void SetPrintModulo(G4int    val)  {printModulo = val;};
   void SetResolution(G4double res) {resolution = res; G4cout << "Resolution :" << res << G4endl;};

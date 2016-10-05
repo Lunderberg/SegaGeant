@@ -1,5 +1,5 @@
 /Target/Material Au
-/Target/Thickness 0.1 mm
+/Target/Thickness 0.8 um
 
 /source/beam 0
 /source/energy 500 keV

@@ -27,7 +27,7 @@ public:
   void BeginOfRunAction(const G4Run*);
   void EndOfRunAction(const G4Run*);
 
-  void fillPerEvent(std::map<int,CrystalEntry>& crystalInfo);    
+  void fillPerEvent(std::map<int,CrystalEntry>& crystalInfo, G4int evtNb);    
   void fillPerEvent(G4double, G4double, G4int*, G4double*, G4double*, G4double*, G4double*); 
   Doppler* doppler;
   CLHEP::RandGauss* gaussianRand;
